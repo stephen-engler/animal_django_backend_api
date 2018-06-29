@@ -1,12 +1,10 @@
 from rest_framework import serializers
 from animals_api.models import Animal
 
-class AnimalSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    commonName = serializers.CharField(required=False, allow_blank=True, max_length=100)
-    scientificName = serializers.CharField(required=False, allow_blank=True, max_length=100)
-    family = serializers.CharField(required=False, allow_blank=True, max_length=100)
-    imageURL = serializers.CharField(required=False, allow_blank=True, max_length=100)
+class AnimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Animal
+        fields = ('id', 'commonName', 'scientificName', 'family', 'imageURL')
 
     def create(self, validated_data):
         """
