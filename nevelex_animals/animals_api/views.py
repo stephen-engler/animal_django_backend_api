@@ -1,51 +1,57 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from animals_api.models import Animal
 from animals_api.serializers import AnimalSerializer
 
-@csrf_exempt
+#Recieves the request and sends back json 
+# url Animals/
+@api_view(['GET', 'POST'])
 def animal_list(request):
     """
     List all code snippets, or create a new animal.
+    args: request
+    returns: json response
+
     """
+    #GET Route
     if request.method == 'GET':
         animals = Animal.objects.all()
         serializer = AnimalSerializer(animals, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
+    #POST Route
     elif request.method == 'POST':
         print(request)
-        data = JSONParser().parse(request)
-        serializer = AnimalSerializer(data=data)
-        if serializer.is_valid():  
+        serializer = AnimalSerializer(data=request.data)
+        if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)   
-        return JsonResponse(serializer.errors, status=400)        
-
-@csrf_exempt
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#Recieves request for get put and delete routes
+# url Animals/(id)
+@api_view(['GET', 'PUT', 'DELETE'])
 def animal_detail(request, pk):
     """
     Retrieve, update or delete an animal.
+    args: request, pk
+    returns: json response
     """
     try:
         animal = Animal.objects.get(pk=pk)
     except Animal.DoesNotExist:
-        return HttpResponse(status=404)
-
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    #GET by id
     if request.method == 'GET':
         serializer = AnimalSerializer(animal)
-        return JsonResponse(serializer.data)
-
+        return Response(serializer.data)
+    #PUT
     elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = AnimalSerializer(animal, data=data)
+        serializer = AnimalSerializer(animal, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #DELETE
     elif request.method == 'DELETE':
         animal.delete()
-        return HttpResponse(status=204)
+        return Response(status=status.HTTP_204_NO_CONTENT)

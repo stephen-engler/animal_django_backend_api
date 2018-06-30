@@ -2,6 +2,11 @@ from rest_framework import serializers
 from animals_api.models import Animal
 
 class AnimalSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Animal Class, can create or update an animal in DB
+    Makes sure new and updated animals have the correct model based
+    on Animal Class
+    """
     class Meta:
         model = Animal
         fields = ('id', 'commonName', 'scientificName', 'family', 'imageURL')
