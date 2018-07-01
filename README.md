@@ -18,3 +18,22 @@ Updates the Animal in the database, expects the key value pairs: commonName, sci
 
 DELETE http://127.0.0.1:8000/Animal/(id)
 Deletes Animal from the database with the corrresponding ID
+
+SETUP INSTRUCTIONS
+Clone or download this repository
+navigate to the root directory via terminal
+Set up a virtual env 
+    $ virtualenv ENV
+Navigate into ENV file and run command
+    $ source bin/activate
+Navigate back to root directory and install dependencies into virtual env
+    pip install django
+    pip install djangorestframework
+Make initial Migration of Animal Model and sync database, First navigate into the nevelex_animals folder and run commands
+    python manage.py makemigrations animals_api
+    python manage.py migrate
+Run Server
+    python manage.py runserver
+
+You can now interact with the backend api
+
